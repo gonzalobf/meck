@@ -73,7 +73,9 @@ is_matcher(_Other) -> false.
 match_ignore(Value, #'$meck.matcher'{type = predicate, impl = Predicate}) ->
     Predicate(Value) == true;
 match_ignore(Value, #'$meck.matcher'{type = hamcrest, impl = HamcrestMatcher}) ->
-    (catch erlang:apply(hamcrest, assert_that, [Value, HamcrestMatcher])) == true;
+    try erlang:apply(hamcrest, assert_that, [Value, HamcrestMatcher])
+    catch _Class:_Reason -> false
+    end;
 match_ignore(_Value, _NotMatcher) ->
     true.
 
